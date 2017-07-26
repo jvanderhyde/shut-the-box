@@ -532,5 +532,4 @@ http://www.cameronius.com/research/mcts/about/index.html
 https://jeffbradberry.com/posts/2015/09/intro-to-monte-carlo-tree-search/
 http://banditalgs.com/2016/09/18/the-upper-confidence-bound-algorithm/
 https://en.wikipedia.org/wiki/Binomial\_proportion\_confidence\_interval
-https://github.com/thedataincubator/DS30_4
-https://www.youtube.com/watch?v=p4NGSH819ZU
+http://blog.thedataincubator.com/2016/07/multi-armed-bandits-2/
