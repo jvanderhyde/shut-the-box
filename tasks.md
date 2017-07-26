@@ -530,9 +530,9 @@ Task 13—Display the table of optimal moves
 References
 ==========
 
-http://www.nature.com/nature/journal/v529/n7587/full/nature16961.html
-http://www.cameronius.com/research/mcts/about/index.html
-https://jeffbradberry.com/posts/2015/09/intro-to-monte-carlo-tree-search/
-http://banditalgs.com/2016/09/18/the-upper-confidence-bound-algorithm/
-https://en.wikipedia.org/wiki/Binomial\_proportion\_confidence\_interval
-http://blog.thedataincubator.com/2016/07/multi-armed-bandits-2/
+http://www.nature.com/nature/journal/v529/n7587/full/nature16961.html<br>
+http://www.cameronius.com/research/mcts/about/index.html<br>
+https://jeffbradberry.com/posts/2015/09/intro-to-monte-carlo-tree-search/<br>
+http://banditalgs.com/2016/09/18/the-upper-confidence-bound-algorithm/<br>
+https://en.wikipedia.org/wiki/Binomial_proportion_confidence_interval<br>
+http://blog.thedataincubator.com/2016/07/multi-armed-bandits-2/<br>
