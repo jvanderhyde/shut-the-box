@@ -42,7 +42,7 @@ Task 1—Monte Carlo simulation
     1.  The rand function returns a number between 0 and 1, but the dart
         game uses numbers between -1 and 1. To get the correct range, we
         have to scale and shift the result of rand. Multiply the result
-        of rand by 2 and then subtract 1 to get $x$ and $y$.
+        of rand by 2 and then subtract 1 to get \\(x\\) and \\(y\\).
 
     1.  A game result is a pair \[x y\].
 
@@ -50,7 +50,7 @@ Task 1—Monte Carlo simulation
 
     1.  You win if the dart is inside the circle. The dart is inside the
         circle if
-        $x^{2} + y^{2} < 1$.
+        \\(x^{2} + y^{2} < 1\\).
 
     1.  Define a function win? that takes a dart throw and checks
         whether it is inside the circle.
