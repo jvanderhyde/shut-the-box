@@ -1,6 +1,3 @@
-<style type="text/css">
-    ol ol { list-style-type: lower-alpha; }
-</style>
 Monte Carlo Tree Search with Clojure
 ====================================
 
@@ -32,6 +29,8 @@ Task 1—Monte Carlo simulation
     darts. We will simulate throwing darts at a circular dart board.
     Some darts hit inside the circle, and some hit outside.
 
+    ![circle](http://calculus.seas.upenn.edu/uploads/Main/InscribedCircle.png)
+
 4.  Replicate the structure of the coin-tossing game to make the
     dart-throwing game.
 
@@ -40,17 +39,17 @@ Task 1—Monte Carlo simulation
     1.  To throw a dart, use the rand function twice to generate a random x coordinate and a random y coordinate.
 
     1.  The rand function returns a number between 0 and 1, but the dart
-        game uses numbers between -1 and 1. To get the correct range, we
-        have to scale and shift the result of rand. Multiply the result
-        of rand by 2 and then subtract 1 to get \\(x\\) and \\(y\\).
+      game uses numbers between -1 and 1. To get the correct range, we
+      have to scale and shift the result of rand. Multiply the result
+      of rand by 2 and then subtract 1 to get $x$ and $y$.
 
-    1.  A game result is a pair \[x y\].
+    1.  A game result is a pair `[x y]`.
 
 6.  Step 2: Define how you win.
 
     1.  You win if the dart is inside the circle. The dart is inside the
         circle if
-        \\(x^{2} + y^{2} < 1\\).
+        $x^{2} + y^{2} < 1$.
 
     1.  Define a function win? that takes a dart throw and checks
         whether it is inside the circle.
@@ -86,7 +85,7 @@ Task 2—Shut the Box
 
     1.  Cross out any set of numbers that add up to your dice roll.
 
-    1.  Repeat steps (b) and (c) until you win or lose.
+    1.  Repeat steps (b) and (c\) until you win or lose.
 
 3.  Now make up one example play through the game that will result in a
     loss:
@@ -104,7 +103,7 @@ Task 2—Shut the Box
     1.  Write down the numbers of the levers 1 through 9 again, but
         cross out the ones you flipped down.
 
-    1.  Repeat steps 4 and 5 until the game ends in a loss.
+    1.  Repeat steps (d) and (e) until the game ends in a loss.
 
 4.  Do the same thing again, but write down a sequence of moves that
     will result in a win. You can do this because you are controlling
@@ -135,7 +134,8 @@ Task 3—Game state
 4.  Define a sample box configuration. Use code like this:
 
     ```clojure
-    (def sample-box …)```
+    (def sample-box …)
+    ```
 
     Fill in the ellipsis (dots) with a sample box configuration using your
     representation from 2.c above.
@@ -144,7 +144,8 @@ Task 3—Game state
     The `rand-int` function should be helpful.
 
     ```clojure
-    (defn dice-roll [] …)```
+    (defn dice-roll [] …)
+    ```
 
 2.  Share the code with the speaker, or get help from the speaker or
     others as necessary.
@@ -298,13 +299,15 @@ Task 8—Shut the box with a choice
       (loop [[f & r] (seq s) p '(())]
         (if f (recur r (concat p (map (partial cons f) p))) p)))
     (def lever-combinations (power [1 2 3 4 5 6 7 8 9]))
-    (defn levers-for-roll [roll] …)```
+    (defn levers-for-roll [roll] …)
+    ```
 
 3.  It will help to store this in a vector for easy reference later. It
     is too slow to filter the power set over and over.
 
     ```clojure
-    (def lever-combinations (into [] (map levers-for-roll (range 13))))```
+    (def lever-combinations (into [] (map levers-for-roll (range 13))))
+    ```
 
 1.  Now that we’re playing the real game, given a box configuration and
     a roll, there may be several options, so the possible-moves function
@@ -425,7 +428,7 @@ Task 11—Monte Carlo Tree Search
 
 5.  We compute the rating by establishing confidence bounds on our probability estimates. The choice with the highest possible value within the bounds is the choice we make. One formula for confidence bounds is based on the standard deviation of the sample:
 
-    $$\frac{1}{n}\left( w + z\sqrt{\frac{\text{wl}}{n}} \right)\backslash n$$
+    $$\frac{1}{n}\left( w + z\sqrt{\frac{wl}{n}} \right)$$
 
     The number of trials is $n$, and the number of wins and losses are  $w$ and $l$, respectively. Note that $w/l$ is our estimate of the probability of winning. The other term is the standard deviation. The parameter $z$ comes from the confidence interval theory; we’ll use $z=2$ because it corresponds to 95% confidence. For our purposes, it can be thought of as a tuning parameter, balancing exploration against exploitation of known good choices. Two issues with this formula:
 
