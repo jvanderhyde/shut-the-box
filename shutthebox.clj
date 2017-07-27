@@ -14,12 +14,23 @@ sample-box
 (defn win? [box]
   (empty? box))
 
-;;Task 4
+;;Task 8
+(defn power [s]
+  (loop [[f & r] (seq s) p '(())]
+    (if f (recur r (concat p (map (partial cons f) p))) p)))
+(def lever-power (power [1 2 3 4 5 6 7 8 9]))
+(defn levers-for-roll [roll]
+  (filter (fn [coll] (= roll (reduce + coll)))
+    lever-power))
+(levers-for-roll 9)
+(def lever-combinations (into [] (map levers-for-roll (range 13))))
+(lever-combinations 9)
+
+;;Task 4 and 8
 (defn possible-moves [box roll]
-  (if (contains? box roll)
-    #{(disj box roll)}
-    #{}))
-(possible-moves sample-box 4)
+  (map (fn [move] (reduce disj box move))
+      (filter (partial every? box) (lever-combinations roll))))
+(possible-moves sample-box 9)
 (possible-moves sample-box 3)
 
 ;;Task 6
@@ -28,8 +39,8 @@ sample-box
     (let [roll (dice-roll)
           moves (possible-moves box roll)]
       (if (empty? moves) :loss
-        (recur (first moves))))))
-(play-game (disj start-box 1))
+        (recur (rand-nth (into [] moves)))))))
+(play-game start-box)
 (play-game easy-box)
 
 ;;Task 7
@@ -38,8 +49,8 @@ sample-box
          record {:win 0, :loss 0}]
     (if (zero? n)
       (double (/ (:win record) (+ (:win record) (:loss record))))
-      (recur (dec n) (update-in record [(play-game (disj start-box 1))] inc)))))
+      (recur (dec n) (update-in record [(play-game start-box)] inc)))))
 (simulate 1000000)
 ;Probability of winning the simplified game is about 0.02%
-
+;Probability of winning the real game is about 2%, assuming random play.
 

@@ -298,7 +298,7 @@ Task 8—Shut the box with a choice
     (defn power [s]
       (loop [[f & r] (seq s) p '(())]
         (if f (recur r (concat p (map (partial cons f) p))) p)))
-    (def lever-combinations (power [1 2 3 4 5 6 7 8 9]))
+    (def lever-power (power [1 2 3 4 5 6 7 8 9]))
     (defn levers-for-roll [roll] …)
     ```
 
