@@ -195,11 +195,11 @@ sample-box
     (map (fn [box] (if-let [p (full-tree [box nil])] (double p) nil)) all-boxes)))
 
 ;;Random play
-(tree-simulation start-box 100000)
+;(tree-simulation start-box 100000)
 ;;Upper confidence bound learning
-(monte-carlo-tree-search start-box 100000)
+;(monte-carlo-tree-search start-box 100000)
 ;;Optimal play
-(look-up-table-optimal start-box)
+;(look-up-table-optimal start-box)
 
 
 ;;Task 9: Let the user play the game
@@ -227,4 +227,33 @@ sample-box
       (if (empty? moves) :loss
           (recur (user-choose box roll moves))))))
 ;(play-game-user start-box)
+
+
+;;Task 13: Create a table of the best move for any box and roll
+
+(defn best-move [[box roll]]
+  (first (filter (fn [b] (= (full-tree [box roll]) (full-tree [b nil]))) (possible-moves box roll))))
+(best-move [start-box 6])
+
+(def best-move-table
+  (let [queries (keys (filter (fn [[[box roll] p]] roll) full-tree))]
+    (zipmap queries (map best-move queries))))
+(into #{} (map first (keys best-move-table)))
+
+(defn box-to-str [s]
+  (if s (apply str (into [] (map (fn [x] (if (s x) (str x) " ")) [1 2 3 4 5 6 7 8 9]))) "x"))
+(box-to-str start-box)
+(box-to-str sample-box)
+
+(def best-move-table-string
+  (reduce
+    (fn [s line] (str s line \newline)) ""
+    (map
+      (fn [box]
+        (reduce str (box-to-str box)
+                (map
+                  (fn [roll] (str \tab (box-to-str (best-move [box roll]))))
+                  (range 2 13))))
+      (into #{} (map first (keys best-move-table))))))
+;(spit "shutthebox-moves.txt" best-move-table-string)
 
