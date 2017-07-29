@@ -54,18 +54,50 @@ sample-box
 ;Probability of winning the simplified game is about 0.02%
 ;Probability of winning the real game is about 2%, assuming random play.
 
+
+;;Task 10: Look-up table
+
+(defn tree-simulation-record [initial-box num-times]
+  (loop [n num-times
+         record {:win 0, :loss 0}]
+    (if (zero? n) record
+      (recur
+        (dec n)
+        (update-in record [(play-game initial-box)] inc)))))
+
+(defn tree-simulation [initial-box num-times]
+  (let [record (tree-simulation-record initial-box num-times)]
+    (double (/ (get record :win) num-times))))
+(tree-simulation start-box 1000)
+
+(def all-boxes
+  (map (partial into #{}) (power (range 1 10))))
+(count all-boxes)
+(def look-up-table
+  (zipmap all-boxes (map (fn [x] (tree-simulation x 100)) all-boxes)))
+
+;;Save and load the table
+;(spit "shutthebox-table.txt" (zipmap (map (fn [x] (apply sorted-set x)) (keys look-up-table)) (vals look-up-table)))
+;(def look-up-table (read-string (slurp "shutthebox-10000000.txt")))
+
+
 ;;Task 9: Let the user play the game
+
 (defn print-state [box roll]
   (println (str "Current box: " (apply sorted-set box) " roll: " roll)))
+
 (defn print-choice [i box]
   (println
     (str " " (inc i) ": "
-         (apply sorted-set box))))
+         (apply sorted-set box) " ("
+         (look-up-table box) ")")))
+
 (defn user-choose [box roll moves]
   (println "Possible moves:")
   (doall (map-indexed print-choice moves))
   (print " Choice? ") (flush)
   (nth (vec moves) (dec (read))))
+
 (defn play-game-user [box]
   (if (empty? box) :win
     (let [roll (dice-roll)
