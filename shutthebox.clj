@@ -68,7 +68,7 @@ sample-box
 (defn tree-simulation [initial-box num-times]
   (let [record (tree-simulation-record initial-box num-times)]
     (double (/ (get record :win) num-times))))
-(tree-simulation start-box 1000)
+;(tree-simulation start-box 1000)
 
 (def all-boxes
   (map (partial into #{}) (power (range 1 10))))
@@ -79,6 +79,80 @@ sample-box
 ;;Save and load the table
 ;(spit "shutthebox-table.txt" (zipmap (map (fn [x] (apply sorted-set x)) (keys look-up-table)) (vals look-up-table)))
 ;(def look-up-table (read-string (slurp "shutthebox-10000000.txt")))
+
+
+;;Task 11: Monte Carlo tree search
+
+(defn ucb [record]
+  (if (nil? record)
+    (Double/POSITIVE_INFINITY)
+    (let [w (get record :win 0)
+          l (get record :loss 0)
+          n (+ w l)]
+      (if (zero? w)
+        (double (/ 3 n))
+        (/ (+ w (* 2 (Math/sqrt (/ (* w l) n)))) n)))))
+(ucb {:win 5, :loss 5})
+(ucb {:win 50, :loss 50})
+(ucb {:win 0, :loss 5})
+(ucb {:win 1, :loss 5})
+(ucb {:win 0, :loss 50})
+(ucb {:win 1, :loss 50})
+(ucb {:win 1, :loss 0})
+(ucb {:win 9, :loss 0})
+(ucb {:win 9, :loss 1})
+(ucb nil)
+
+(defn find-best-child [tree children]
+  (let [child-values (map (comp ucb tree) children)]
+    (key (apply max-key val (zipmap children child-values)))))
+(find-best-child
+  {#{2 3 5} {:win 1, :loss 1}
+   #{2 3} {:win 0, :loss 2}
+   #{5} {:win 1, :loss 1}}
+  #{#{2 3} #{5}})
+(find-best-child
+  {#{2 3 5} {:win 1, :loss 1}
+   #{2 3} {:win 0, :loss 2}}
+  #{#{2 3} #{5}})
+(find-best-child
+  {#{2 3 5} {:win 1, :loss 1}} #{#{2 3} #{5}})
+
+(defn add-result [tree box result]
+  [(assoc tree box
+     (merge-with + (get tree box) (assoc {} result 1))) result])
+
+;;Returns the updated tree and the most recent result in a vector
+(defn uct [tree box]
+  (if-let [record (get tree box)]
+    (let
+      [roll (dice-roll)
+       children (possible-moves box roll)]
+      (cond
+        (empty? children)
+        (add-result tree box :loss)
+        (empty? (first children))
+        (add-result tree box :win)
+        :else
+        (let [best-child (find-best-child tree children)
+              [updated-tree new-result] (uct tree best-child)]
+          (add-result updated-tree box new-result))))
+    (let [new-result (play-game box)]
+      [(assoc-in tree [box new-result] 1) new-result])))
+(uct {} easy-box)
+(uct {} start-box)
+(uct {start-box {:win 0, :loss 1}} start-box)
+
+(defn monte-carlo-tree-search [box num-times]
+  (let [record
+        ((loop [n num-times tree {}]
+           (if (zero? n) tree
+             (recur (dec n) (first (uct tree box))))) box)]
+         (double (/ (:win record) (+ (:win record) (:loss record))))))
+(monte-carlo-tree-search start-box 100000)
+;For 1000 dives into the tree, the probability of winning is about 0.0328.
+;For 10000, the probability is about 0.0442.
+;Learning has occurred! We have achieved AI!
 
 
 ;;Task 9: Let the user play the game
