@@ -50,7 +50,28 @@ sample-box
     (if (zero? n)
       (double (/ (:win record) (+ (:win record) (:loss record))))
       (recur (dec n) (update-in record [(play-game start-box)] inc)))))
-(simulate 1000000)
+;(simulate 1000000)
 ;Probability of winning the simplified game is about 0.02%
 ;Probability of winning the real game is about 2%, assuming random play.
+
+;;Task 9: Let the user play the game
+(defn print-state [box roll]
+  (println (str "Current box: " (apply sorted-set box) " roll: " roll)))
+(defn print-choice [i box]
+  (println
+    (str " " (inc i) ": "
+         (apply sorted-set box))))
+(defn user-choose [box roll moves]
+  (println "Possible moves:")
+  (doall (map-indexed print-choice moves))
+  (print " Choice? ") (flush)
+  (nth (vec moves) (dec (read))))
+(defn play-game-user [box]
+  (if (empty? box) :win
+    (let [roll (dice-roll)
+          moves (possible-moves box roll)]
+      (print-state box roll)
+      (if (empty? moves) :loss
+          (recur (user-choose box roll moves))))))
+;(play-game-user start-box)
 
