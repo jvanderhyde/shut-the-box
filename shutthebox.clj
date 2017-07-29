@@ -149,10 +149,57 @@ sample-box
            (if (zero? n) tree
              (recur (dec n) (first (uct tree box))))) box)]
          (double (/ (:win record) (+ (:win record) (:loss record))))))
-(monte-carlo-tree-search start-box 100000)
+;(monte-carlo-tree-search start-box 100000)
 ;For 1000 dives into the tree, the probability of winning is about 0.0328.
 ;For 10000, the probability is about 0.0442.
 ;Learning has occurred! We have achieved AI!
+
+
+;;Task 12: Construct the full game tree
+
+;;Probabilties for a pair of dice
+(def dice-probs
+  (into {}
+    (map
+      (fn [[k v]] [k (/ v 36)])
+      (frequencies
+        (for [x (range 1 7) y (range 1 7)] (+ x y))))))
+
+;;Construct the table of probabilties
+(defn build-tree [tree [box roll]]
+  (if (get tree [box roll]) tree
+    (let
+      [children
+       (cond
+         (empty? box) '()
+         roll  (map (fn [b] [b nil]) (possible-moves box roll))
+         :else (map (fn [r] [box r]) (keys dice-probs)))
+       tree-with-children
+       (reduce build-tree tree children)
+       child-probs
+       (map tree-with-children children)]
+      (assoc tree-with-children [box roll]
+        (cond
+          (empty? box) 1
+          (empty? children) 0
+          roll  (reduce max child-probs)
+          :else (reduce + (map * child-probs (vals dice-probs))))))))
+(def full-tree (build-tree {} [start-box nil]))
+(double (full-tree [start-box nil]))
+;;The table is missing one value because the state is impossible to reach.
+(double ((build-tree full-tree [(disj start-box 1) nil]) [(disj start-box 1) nil]))
+
+(def look-up-table-optimal
+  (zipmap
+    (map (fn [box] (apply sorted-set box)) all-boxes)
+    (map (fn [box] (if-let [p (full-tree [box nil])] (double p) nil)) all-boxes)))
+
+;;Random play
+(tree-simulation start-box 100000)
+;;Upper confidence bound learning
+(monte-carlo-tree-search start-box 100000)
+;;Optimal play
+(look-up-table-optimal start-box)
 
 
 ;;Task 9: Let the user play the game
@@ -164,7 +211,7 @@ sample-box
   (println
     (str " " (inc i) ": "
          (apply sorted-set box) " ("
-         (look-up-table box) ")")))
+         (look-up-table-optimal box) ")")))
 
 (defn user-choose [box roll moves]
   (println "Possible moves:")
